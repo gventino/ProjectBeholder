@@ -1,0 +1,16 @@
+{
+  "target_servers": [
+    "192.168.1.10",
+    "192.168.1.11",
+    "192.168.1.12"
+  ],
+  "external_sites": [
+    "httpbin.org",
+    "example.com",
+    "jsonplaceholder.typicode.com",
+    "httpforever.com"
+  ],
+  "simulation_duration_hours": 24,
+  "concurrent_users": 3,
+  "log_level": "INFO"
+}
