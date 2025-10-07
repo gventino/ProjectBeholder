@@ -1,0 +1,23 @@
+up:
+	# virtual docker network that simulates physical devices
+	# sudo docker network create -d macvlan \
+	# 	--subnet=192.168.1.0/24 \
+	# 	--gateway=192.168.1.1 \
+	# 	-o parent=enp7s0 \
+	# 	homelab
+	 	
+	sudo docker build -t simple-scraper web_scraper
+	sudo docker run -d \
+		--network homelab \
+	 	--ip 192.168.1.10 \
+		-p 8001:8001 \
+		--name web_scraper \
+		simple-scraper
+	
+	sudo docker build -t echo-api echo
+	sudo docker run -d \
+		--network homelab \
+  	--ip 192.168.1.11 \
+		-p 8000:8000 \
+		--name echo-api \
+		echo-api
