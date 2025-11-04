@@ -21,3 +21,15 @@ up:
 		-p 8000:8000 \
 		--name echo-api \
 		echo-api
+
+	sudo docker build -t echo-api-vulnerable echo_vulnerable
+	sudo docker run -d \
+		--network homelab \
+		--ip 192.168.1.12 \
+		-p 8002:8002 \
+		--name echo-api-vulnerable \
+		echo-api-vulnerable
+
+down:
+	sudo docker rm -f $(sudo docker ps -a -q)
+
