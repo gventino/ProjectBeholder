@@ -31,5 +31,5 @@ up:
 		echo-api-vulnerable
 
 down:
-	sudo docker rm -f $(sudo docker ps -a -q)
-
+	sudo docker stop /web_scraper /echo-api /echo-api-vulnerable
+	sudo docker rm /web_scraper /echo-api /echo-api-vulnerable
