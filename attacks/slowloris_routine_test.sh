@@ -12,9 +12,9 @@ while true; do
   # 5 minutos = 300 segundos
   # 1 hora = 3600 segundos
 
-  RANGE=3301
-  MIN_TIME=300
-  RANDOM_TIME=$(($RANDOM % $RANGE + $MIN_TIME))
+  RANGE=630
+  MIN_TIME=30
+  RANDOM_TIME=$((($RANDOM % $RANGE) + $MIN_TIME))
 
   echo "[INFO] Próximo teste em $RANDOM_TIME segundos (Aprox. $(($RANDOM_TIME / 60)) minutos)."
   sleep $RANDOM_TIME

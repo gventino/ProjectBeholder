@@ -17,57 +17,56 @@ app = FastAPI(
 
 def scrape_links(url: str):
     """
-    Baixa o conteúdo de uma URL, analisa o HTML e extrai todos os links (href).
-    Converte links relativos em absolutos.
+    Tenta baixar e extrair links. Se falhar, a exceção é propagada
+    para ser tratada pelo endpoint.
     """
     print(f"Iniciando scrape da URL: {url}")
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
 
-        soup = BeautifulSoup(response.content, "lxml")
+    # Define um User-Agent para evitar bloqueios simples (403)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
 
-        found_urls = set()
+    # O timeout pode gerar exceção, o requests.get pode gerar exceção
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()  # Levanta erro se status for 4xx ou 5xx
 
-        for a_tag in soup.find_all("a", href=True):
-            href = a_tag["href"]
-            if not href or href.startswith("#"):
-                continue
+    soup = BeautifulSoup(response.content, "lxml")
+    found_urls = set()
 
-            absolute_url = urljoin(url, href)
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"]
+        if not href or href.startswith("#") or href.startswith("javascript:"):
+            continue
+
+        absolute_url = urljoin(url, href)
+        # Filtro opcional: garantir que é http/https
+        if absolute_url.startswith("http"):
             found_urls.add(absolute_url)
 
-        print(f"Encontradas {len(found_urls)} URLs.")
-        return list(found_urls)
-
-    except requests.exceptions.RequestException as e:
-        print(f"Erro ao acessar a URL {url}: {e}")
-        raise HTTPException(
-            status_code=400, detail=f"Não foi possível acessar a URL: {e}"
-        )
-
-    except Exception as e:
-        print(f"Erro inesperado no scrape: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Ocorreu um erro inesperado no servidor."
-        )
+    print(f"Encontradas {len(found_urls)} URLs.")
+    return list(found_urls)
 
 
 @app.post("/scrape")
 async def create_scrape_request(request: ScrapeRequest):
     """
-    Recebe uma URL, faz o scraping dos links e retorna a lista de URLs encontradas.
+    Recebe uma URL. Se ocorrer erro no scrape, retorna HTTP 400 com detalhe.
     """
-    found_urls = scrape_links(str(request.url))
+    try:
+        found_urls = scrape_links(str(request.url))
 
-    return {"source_url": str(request.url), "found_urls": found_urls}
+        # Se a página carregar mas não tiver links, retornamos lista vazia (sucesso)
+        return {"source_url": str(request.url), "found_urls": found_urls}
+
+    except Exception as e:
+        # Aqui capturamos o erro e enviamos ao cliente
+        error_msg = f"Falha ao processar URL: {str(e)}"
+        print(f"❌ Erro enviado ao cliente: {error_msg}")
+        raise HTTPException(status_code=400, detail=error_msg)
 
 
 @app.get("/")
 def read_root():
-    return {
-        "message": "Servidor Scraper está no ar. Use o endpoint POST /scrape para iniciar."
-    }
+    return {"message": "Servidor Scraper está no ar."}
+

@@ -6,7 +6,7 @@ import string
 SERVER_URL = "http://192.168.1.11:8000/echo"
 
 MIN_DELAY_SECONDS = 2 * 60  # 2 minutos
-MAX_DELAY_SECONDS = 10 * 60  # 10 minutos
+MAX_DELAY_SECONDS = 5 * 60  # 10 minutos
 
 MIN_MSG_LENGTH = 256
 MAX_MSG_LENGTH = 4096

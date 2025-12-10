@@ -14,8 +14,8 @@ while true; do
 
   # Gera um número aleatório de 0 a 3300, e então soma 300
   # Isso garante um resultado entre 300 (5 min) e 3600 (1 hora)
-  RANGE=3301
-  MIN_TIME=600
+  RANGE=601
+  MIN_TIME=30
   RANDOM_TIME=$(($RANDOM % $RANGE + $MIN_TIME))
 
   echo "[INFO] Próximo scan em $RANDOM_TIME segundos (Aprox. $(($RANDOM_TIME / 60)) minutos)."

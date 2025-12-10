@@ -1,11 +1,11 @@
+network:
+	sudo docker network create -d macvlan \
+		--subnet=192.168.1.0/24 \
+		--gateway=192.168.1.1 \
+		-o parent=enp7s0 \
+		homelab
+
 up:
-	# virtual docker network that simulates physical devices
-	# sudo docker network create -d macvlan \
-	# 	--subnet=192.168.1.0/24 \
-	# 	--gateway=192.168.1.1 \
-	# 	-o parent=enp7s0 \
-	# 	homelab
-	 	
 	sudo docker build -t simple-scraper web_scraper
 	sudo docker run -d \
 		--network homelab \
@@ -22,14 +22,21 @@ up:
 		--name echo-api \
 		echo-api
 
-	sudo docker build -t echo-api-vulnerable echo_vulnerable
+	# sudo docker build -t echo-api-vulnerable echo_vulnerable
+	# sudo docker run -d \
+	# 	--network homelab \
+	# 	--ip 192.168.1.12 \
+	# 	-p 8002:8002 \
+	# 	--name echo-api-vulnerable \
+	# 	echo-api-vulnerable
+
+	sudo docker build -t net-tester net_tester
 	sudo docker run -d \
-		--network homelab \
-		--ip 192.168.1.12 \
-		-p 8002:8002 \
-		--name echo-api-vulnerable \
-		echo-api-vulnerable
+			--network homelab \
+			--ip 192.168.1.13 \
+			--name net-tester \
+			net-tester
 
 down:
-	sudo docker stop /web_scraper /echo-api /echo-api-vulnerable
-	sudo docker rm /web_scraper /echo-api /echo-api-vulnerable
+	sudo docker stop /web_scraper /echo-api /echo-api-vulnerable # /net-tester
+	sudo docker rm /web_scraper /echo-api  /echo-api-vulnerable # /net-tester
