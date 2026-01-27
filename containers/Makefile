@@ -38,5 +38,5 @@ up:
 			net-tester
 
 down:
-	sudo docker stop /web_scraper /echo-api /echo-api-vulnerable # /net-tester
-	sudo docker rm /web_scraper /echo-api  /echo-api-vulnerable # /net-tester
+	sudo docker stop /web_scraper /echo-api /net-tester #/echo-api-vulnerable 
+	sudo docker rm /web_scraper /echo-api  /net-tester #/echo-api-vulnerable
